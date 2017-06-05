@@ -27,10 +27,72 @@
             <!-- Button triggers new movie to be added -->
             <input id="add-gif" type="submit" value="Add a Gif">
         </form>
+        <!-- Shows Gifs with ratings here -->
+        <div id="gifs"></div>
         <!-- Script links for jQuery -->
         <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
         <script type="text/javascript">
-        var shows = ["Archer", "Game of Thrones", "Bob's Burgers", "Rick and Morty", "NBA", "The 100", "Breaking Bad"]
+        // Initial array of Shows
+        var shows = ["Archer", "Game of Thrones", "Bob's Burgers", "Bojack Horseman", "Rick and Morty", "NBA", "Hey Arnold", "Breaking Bad", "Boardwalk Empire", "The Sopranos", "Silicon Valley", "Shark Tank", "Highly Questionable"];
+
+
+
+        // Create function to re-render HTML to display Gifs and Ratings
+        function displayShowGifs() {
+
+            var show = $(this).attr("data-name");
+            var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + show + "&limit=10&&api_key=dc6zaTOxFJmzC"
+
+
+            // Create AJAX call for specifiec show being called
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            }).done(function(response) {
+
+                // Console Logging Data recieved from AJAX call
+                console.log(response);
+
+                $("#gifs").append("<div>" + show + "</div>");
+
+                // Create variable for button choice || search result
+                var results = response.data;
+                console.log(results);
+                // For loop through array of 10 gifs
+                for (var i = 0; i < results.length; i++) {
+
+
+                    // RETURNING 0 -- ASK FOR HELP
+                    console.log(i);
+
+
+                    //  Creating variable to create new Div with class of "item"
+                    var gifDiv = $("<div class='item'>");
+
+                    // Creating variable to display Gif rating
+                    var rating = results[i].rating;
+
+                    console.log(rating);
+                    // creates variable for <p> element tag to display string "rating" & rating
+                    var p = $("<p>").text("Rating: " + rating);
+                    // Creates variable for Gif image (aka the "gif")
+                    var gifImage = $("<img>");
+                    // adds src URL of Gif object to "<img>" node
+                    gifImage.attr("src", results[i].images.fixed_height.url);
+
+
+                    // Append variables p && gifImage to var gifDiv
+
+                    gifDiv.prepend(p);
+                    gifDiv.prepend(gifImage);
+
+                    // Display Gif Objects (aka gifDivs) to <div id= 'gifs'>
+                    $("#gifs").append(gifDiv);
+
+                }
+            });
+        }
+
 
         // Function for displaying movie data
         function renderButtons() {
@@ -72,6 +134,11 @@
         });
 
 
+        // Add event listener on button click to display Gifs and ratings
+        $(document).on("click", ".show", displayShowGifs);
+
+
+        // Recalling rendebuttons f(x) to display button array
         renderButtons();
         </script>
         <!-- Closing .Container <div> -->
